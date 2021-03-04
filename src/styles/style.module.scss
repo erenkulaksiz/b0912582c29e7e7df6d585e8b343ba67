@@ -1,0 +1,170 @@
+
+
+$font_size: 12px;
+@mixin font($size: $font_size, $bold: 400){
+    font-family: "Roboto", Helvetica, sans-serif;
+    font-size: $size;
+    font-weight: $bold;
+}
+
+@media only screen and (max-width: 600px) {
+    .container {
+        &__content {
+            display: flex;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+    }
+}
+@media only screen and (min-width: 600px) {
+    .container {
+        &__content {
+            display: flex;
+            padding-top: 24px;
+            padding-bottom: 24px;
+            padding-left: 32px;
+            padding-right: 32px;
+        }
+    }
+}
+@media only screen and (min-width: 768px) {
+    .container {
+        &__content {
+            display: flex;
+            padding-top: 32px;
+            padding-bottom: 32px;
+            padding-left: 64px;
+            padding-right: 64px;
+        }
+    }
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    &__header{
+        display: flex;
+        background-color: #073763;
+        width: 100%;
+        height: 80px;
+        .left{
+            display: flex;
+            height: 100%;
+            width: 100%;
+            &__title{
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                margin-left: 24px;
+                height: 100%;
+                color: white;
+                .title{
+                    display: flex;
+                    @include font(28px, 600);
+                }
+            }
+        }
+        .right{
+            display: flex;
+            height: 100%;
+            width: 100%;
+            &__button{
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                width: 100%;
+                height: 100%;
+                margin-right: 24px;
+                button{
+                    height: 28px;
+                    width: 160px;
+                }
+            }
+        }
+    }
+    &__content{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        .stepper{
+            display: flex;
+            justify-content: center;
+            height: 188px;
+            width: 100%;
+            background-color: #F2F2F2;
+            .steps{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 80%;
+                .bar{
+                    position: relative;
+                    height: 2px;
+                    width: 240px;
+                    background-color: #E5E5E5;
+                    margin-bottom: 38px;
+                }
+                .step{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    .icon{
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border: 1px solid #E9E9E9;
+                        background-color: white;
+                        width: 82px;
+                        height: 82px;
+                        border-radius: 64px;
+                        .faicon{
+                            height: 32px;
+                            width: 32px;
+                            color: #C0C0C0;
+                        }
+                        &__current{
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            border: 1px solid #333333;
+                            background-color: white;
+                            width: 82px;
+                            height: 82px;
+                            border-radius: 64px;
+                            .faicon{
+                                height: 32px;
+                                width: 32px;
+                                color: #333333;
+                            }
+                        }
+                    }
+                    .desc{
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-top: 24px;
+                        text-align: center;
+                        color: #A9A9A9;
+                        &__current{
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-top: 24px;
+                            text-align: center;
+                            color: black;
+                        }
+                    }
+                }
+            }
+        }
+        .choose{
+
+        }
+    }
+}
