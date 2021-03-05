@@ -1,0 +1,130 @@
+$font_size: 12px;
+@mixin font($size: $font_size, $bold: 400) {
+  font-family: "Roboto", Helvetica, sans-serif;
+  font-size: $size;
+  font-weight: $bold;
+}
+
+@media only screen and (max-width: 600px) {
+  .selective {
+    &__options {
+      .faicon {
+        display: none;
+      }
+    }
+  }
+}
+@media only screen and (min-width: 600px) {
+  //wrapper > selective > &__options > entry > select > faicon
+  .selective {
+    &__options {
+      .faicon {
+        display: none;
+      }
+    }
+  }
+}
+@media only screen and (min-width: 768px) {
+  .selective {
+    &__options {
+      .faicon {
+        display: flex;
+      }
+    }
+  }
+}
+
+.selective {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  width: 100%;
+  border-style: solid;
+  border-color: #f4f4f4;
+  border-width: 2px;
+  margin-top: 24px;
+  padding: 24px;
+  padding-bottom: 32px;
+  border-radius: 8px;
+  &__hotel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    select {
+      display: flex;
+      height: 28px;
+      width: 100%;
+      border-radius: 0px;
+    }
+    .faicon {
+      margin-right: 16px;
+    }
+  }
+  &__options {
+    display: flex;
+    margin-top: 24px;
+    height: 100%;
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    .elements {
+      display: flex;
+      flex-direction: column;
+      .select {
+        display: flex;
+        flex-direction: row;
+        input {
+          height: 28px;
+        }
+        .faicon {
+          height: 20px;
+          width: 20px;
+          margin-left: 10px;
+        }
+      }
+      .title {
+        width: 100%;
+        margin-bottom: 6px;
+        @include font(16px, 600);
+      }
+    }
+    .entry {
+      display: flex;
+      flex: 25;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-right-width: 1px;
+      border-right-style: solid;
+      border-right-color: black;
+    }
+    .checkout {
+      display: flex;
+      flex: 25;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-right-width: 1px;
+      border-right-style: solid;
+      border-right-color: black;
+    }
+    .adult {
+      display: flex;
+      flex: 25;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-right-width: 1px;
+      border-right-style: solid;
+      border-right-color: black;
+    }
+    .children {
+      display: flex;
+      flex: 25;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
