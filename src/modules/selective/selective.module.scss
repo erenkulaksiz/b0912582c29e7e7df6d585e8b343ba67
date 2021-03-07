@@ -8,8 +8,19 @@ $font_size: 12px;
 @media only screen and (max-width: 600px) {
   .selective {
     &__options {
+      display: flex;
+      flex-direction: column;
       .faicon {
         display: none;
+      }
+      .entry {
+        border-right-width: 0px;
+      }
+      .checkout {
+        border-right-width: 0px;
+      }
+      .adult {
+        border-right-width: 0px;
       }
     }
   }
@@ -18,17 +29,45 @@ $font_size: 12px;
   //wrapper > selective > &__options > entry > select > faicon
   .selective {
     &__options {
+      display: flex;
+      flex-direction: column;
       .faicon {
         display: none;
+      }
+      .entry {
+        border-right-width: 0px;
+      }
+      .checkout {
+        border-right-width: 0px;
+      }
+      .adult {
+        border-right-width: 0px;
       }
     }
   }
 }
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 1000px) {
   .selective {
     &__options {
+      display: flex;
+      flex-direction: row;
       .faicon {
         display: flex;
+      }
+      .entry {
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: black;
+      }
+      .checkout {
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: black;
+      }
+      .adult {
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: black;
       }
     }
   }
@@ -37,7 +76,6 @@ $font_size: 12px;
 .selective {
   display: flex;
   flex-direction: column;
-  height: 200px;
   width: 100%;
   border-style: solid;
   border-color: #f4f4f4;
@@ -46,6 +84,22 @@ $font_size: 12px;
   padding: 24px;
   padding-bottom: 32px;
   border-radius: 8px;
+
+  .childrenAlert {
+    display: flex;
+    margin-top: 24px;
+    width: 100%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(212, 0, 0);
+    border-radius: 6px;
+    padding: 12px;
+    @include font(16px, 600);
+    &__notShowing {
+      display: none;
+    }
+  }
+
   &__hotel {
     display: flex;
     justify-content: center;
@@ -71,11 +125,14 @@ $font_size: 12px;
     .elements {
       display: flex;
       flex-direction: column;
+      padding: 12px;
       .select {
         display: flex;
         flex-direction: row;
+        width: 100%;
         input {
           height: 28px;
+          width: 100%;
         }
         .faicon {
           height: 20px;
@@ -95,9 +152,6 @@ $font_size: 12px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-right-width: 1px;
-      border-right-style: solid;
-      border-right-color: black;
     }
     .checkout {
       display: flex;
@@ -105,9 +159,6 @@ $font_size: 12px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-right-width: 1px;
-      border-right-style: solid;
-      border-right-color: black;
     }
     .adult {
       display: flex;
@@ -115,9 +166,6 @@ $font_size: 12px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-right-width: 1px;
-      border-right-style: solid;
-      border-right-color: black;
     }
     .children {
       display: flex;

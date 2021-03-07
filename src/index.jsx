@@ -38,6 +38,8 @@ const App = () => {
     const progress = store.getState().progress;
     const selectiveData = store.getState().selectiveData;
 
+    const selectedRoom = store.getState().roomSelected.data;
+
     const backProgress = () => {
         // senle işim olcak bekle
 
@@ -49,23 +51,43 @@ const App = () => {
 
         console.log("selectiveData", selectiveData);
 
-        if (selectiveData.data) {
-            // Eger data var ise islem yap.
-            //const dateDiff = selectiveData.data.startdate - selectiveData.data.enddate;
-            //const daysDiff = Math.floor(dateDiff / (1000 * 3600 * 24)) + 1;
-            //console.log("daysdiff", daysDiff);
-            /*if (daysDiff < 0 || daysDiff == 0) {
-                alert("check dates");
-            } else {*/
-            if (selectiveData.data.selectedHotel != 0) {
-                store.dispatch({ type: 'CONTINUE' });
-                console.log(HotelDetails);
+        if (progress == 1) {
+            if (selectiveData.data) {
+                // Eger data var ise islem yap.
+                //const dateDiff = selectiveData.data.startdate - selectiveData.data.enddate;
+                //const daysDiff = Math.floor(dateDiff / (1000 * 3600 * 24)) + 1;
+                //console.log("daysdiff", daysDiff);
+                /*if (daysDiff < 0 || daysDiff == 0) {
+                    alert("check dates");
+                } else {*/
+
+                if (selectiveData.data.selectedHotel != 0) {
+                    if (!selectiveData.data.startdate) {
+                        alert("choose a start date");
+                    } else {
+                        if (!selectiveData.data.enddate) {
+                            alert("choose a end date");
+                        } else {
+                            store.dispatch({ type: 'CONTINUE' });
+                            console.log("hoteldetails ", HotelDetails);
+                            console.log("progress: ", progress)
+                        }
+                    }
+                } else {
+                    alert("choose a hotel");
+                }
+                //}
             } else {
-                alert("choose a hotel");
+                alert("fill the form");
             }
-            //}
-        } else {
-            alert("fill the form");
+        } else if (progress == 2) {
+            if (!selectedRoom) {
+                alert("choose a room");
+            } else {
+                store.dispatch({ type: 'CONTINUE' });
+                console.log("hoteldetails ", HotelDetails);
+                console.log("progress: ", progress)
+            }
         }
 
     }
@@ -81,33 +103,38 @@ const App = () => {
                         <Selective
                             hotels={hotels}
                             states={data => { console.log(data); store.dispatch({ type: 'SELECTIVE_DATA', payload: { data } }); }}
-                            currentData={selectiveData} />}
+                            currentData={selectiveData}
+                            hotels={hotels}
+                            hotelDetails={HotelDetails}
+                        />}
 
-                    {(() => {
-                        if (progress == 2) {
-                            return (
-                                <>
-                                    <HotelSelective
-                                        hotels={hotels}
-                                        states={selectiveData}
-                                        hotelDetails={HotelDetails} />
-                                    <RoomSelective />
-                                </>
-                            );
-                        }
-                    })()}
+                    {progress == 2 &&
+                        <>
+                            <HotelSelective
+                                hotels={hotels}
+                                states={selectiveData}
+                                hotelDetails={HotelDetails}
+                                child={selectiveData.data.child_status}
+                            />
+                            <RoomSelective
+                                cacheSelectedRoom={selectedRoom}
+                                hotelDetails={HotelDetails}
+                                selectedHotel={selectiveData.data.selectedHotel}
+                                selectedRoom={data => { store.dispatch({ type: 'SELECT_ROOM', payload: { data } }); }}
+                            />
+                        </>}
 
                     {progress == 3 && <div>onizleme</div>}
 
                 </div>
-                {progress != 4 && <Footer onBack={() => {
-                    backProgress();
-                }}
-                    onContinue={() => { continueProgress() }}
-                    showBack={progress != 1 ? true : false}
-                    continueText={footerProgress[progress - 1]}
-                />}
             </div>
+            {progress != 4 && <Footer onBack={() => {
+                backProgress();
+            }}
+                onContinue={() => { continueProgress() }}
+                showBack={progress != 1 ? true : false}
+                continueText={footerProgress[progress - 1]}
+            />}
         </div>
     )
 

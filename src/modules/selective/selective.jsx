@@ -13,15 +13,13 @@ class Selective extends Component {
         super(props);
         this.state = {
             selectedHotel: 0,
-            startdate: new Date(),
-            enddate: new Date(),
+            startdate: null,
+            enddate: null,
             adult: 1,
             children: 1,
+            child_status: true,
+            max_adult_size: 5,
         };
-    }
-
-    handleChange = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
     }
 
     render() {
@@ -30,6 +28,7 @@ class Selective extends Component {
             hotels,
             states,
             currentData,
+            hotelDetails,
         } = this.props
 
         let data = {
@@ -38,16 +37,48 @@ class Selective extends Component {
             enddate: this.state.enddate,
             adult: this.state.adult,
             children: this.state.children,
+            child_status: this.state.child_status,
+            max_adult_size: this.state.max_adult_size,
         }
 
         if (currentData.data) {
             console.log("reserved hotel ->>> ", currentData.data.selectedHotel);
-            data.selectedHotel = currentData.data.selectedHotel;
-            data.startdate = currentData.data.startdate;
-            data.enddate = currentData.data.enddate;
-            data.adult = currentData.data.adult;
-            data.children = currentData.data.children;
+
+            data = {
+                ...data,
+                selectedHotel: currentData.data.selectedHotel,
+                startdate: currentData.data.startdate,
+                enddate: currentData.data.enddate,
+                adult: currentData.data.adult,
+                children: currentData.data.children,
+            }
+
             console.log("adult ->>> ", currentData.data.adult);
+            if (hotelDetails && data.selectedHotel != 0) {
+                console.log("got hotel details: ", hotelDetails);
+
+                hotelDetails.map(function (hotel, index) {
+                    if (hotel.id == data.selectedHotel) {
+                        console.log("children for id: " + hotel.id, hotel.child_status);
+                        console.log("max adult for id: " + hotel.id, hotel.max_adult_size);
+                        data = {
+                            ...data,
+                            child_status: hotel.child_status,
+                            max_adult_size: hotel.max_adult_size,
+                        };
+                    }
+                });
+            }
+        }
+
+        if (this.state.child_status != data.child_status) {
+            this.setState({ child_status: data.child_status });
+            states(data);
+        }
+
+        if (this.state.max_adult_size != data.max_adult_size) {
+            this.setState({ max_adult_size: data.max_adult_size });
+            states(data);
         }
 
         return (
@@ -109,11 +140,12 @@ class Selective extends Component {
                                 Yetişkin Sayısı
                             </div>
                             <div className={styles.select}>
-                                <input type="number" name="adult" step="1" defaultValue={data.adult} onChange={e =>
+                                <input type="number" name="adult" step="1" min="0" max={data.max_adult_size} defaultValue={data.adult} onChange={e => {
                                     this.setState({ adult: e.target.value }, () => {
-                                        data = { ...data, adult: this.state.adult }
+                                        data = { ...data, adult: e.target.value }
                                         states(data);
-                                    })}
+                                    })
+                                }}
                                 />
                             </div>
                         </div>
@@ -124,15 +156,19 @@ class Selective extends Component {
                                 Çocuk Sayısı
                             </div>
                             <div className={styles.select}>
-                                <input type="number" name="children" step="1" defaultValue={data.children} onChange={e =>
+                                <input type="number" name="children" step="1" min="0" max="5" defaultValue={data.children} disabled={!data.child_status} onChange={e => {
                                     this.setState({ children: e.target.value }, () => {
                                         data = { ...data, children: this.state.children }
                                         states(data);
-                                    })}
+                                    })
+                                }}
                                 />
                             </div>
                         </div>
                     </div>
+                </div>
+                <div className={!data.child_status ? styles.childrenAlert : styles.childrenAlert__notShowing}>
+                    Çocuk ziyaretçi kabul edilmiyor!
                 </div>
             </div>
         );
@@ -144,6 +180,7 @@ Selective.propTypes = {
     hotels: PropTypes.string,
     states: PropTypes.func,
     currentData: PropTypes.string,
+    hotelDetails: PropTypes.string,
 }
 
 export default Selective

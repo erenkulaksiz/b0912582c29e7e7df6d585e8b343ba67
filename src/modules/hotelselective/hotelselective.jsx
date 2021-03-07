@@ -14,6 +14,7 @@ class HotelSelective extends Component {
             states,
             hotels,
             hotelDetails,
+            child,
         } = this.props
 
         return (
@@ -43,10 +44,13 @@ class HotelSelective extends Component {
                         <div className={styles.adult}>
                             <b>Yetişkin:</b> {states.data.adult}
                         </div>
-                        •
-                        <div className={styles.children}>
-                            <b>Çocuk:</b> {states.data.children}
-                        </div>
+
+                        {child &&
+                            <>•<div className={styles.children}>
+                                <b>Çocuk:</b> {states.data.children}
+                            </div></>
+                        }
+
                     </div>
                 </div>
             </div>
@@ -59,6 +63,7 @@ HotelSelective.propTypes = {
     states: PropTypes.string,
     hotels: PropTypes.string,
     hotelDetails: PropTypes.string,
+    child: PropTypes.string,
 }
 
 export default HotelSelective
