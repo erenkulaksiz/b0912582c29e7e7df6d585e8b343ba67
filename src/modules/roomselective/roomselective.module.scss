@@ -1,0 +1,26 @@
+$font_size: 12px;
+@mixin font($size: $font_size, $bold: 400) {
+  font-family: "Roboto", Helvetica, sans-serif;
+  font-size: $size;
+  font-weight: $bold;
+}
+
+.roomselective {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  .title {
+    display: flex;
+    width: 100%;
+    margin-top: 24px;
+    @include font(18px, 500);
+  }
+  .bar {
+    display: flex;
+    height: 2px;
+    width: 100%;
+    background-color: #f6f6f6;
+    margin-top: 24px;
+  }
+}

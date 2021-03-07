@@ -1,0 +1,54 @@
+$font_size: 12px;
+@mixin font($size: $font_size, $bold: 400) {
+  font-family: "Roboto", Helvetica, sans-serif;
+  font-size: $size;
+  font-weight: $bold;
+}
+
+.hotelselective {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  .details {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    background-color: #f2f2f2;
+    margin-top: 24px;
+    padding: 32px;
+    padding-bottom: 32px;
+    border-radius: 8px;
+    &__title {
+      display: flex;
+      align-items: center;
+      .title {
+        @include font(24px, 600);
+      }
+      .location {
+        @include font(12px, 400);
+        margin-left: 8px;
+      }
+    }
+  }
+  .desc {
+    display: flex;
+    width: 100%;
+    margin-top: 12px;
+    .startdate {
+      margin-right: 8px;
+    }
+    .enddate {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+    .adult {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+    .children {
+      margin-left: 8px;
+    }
+  }
+}

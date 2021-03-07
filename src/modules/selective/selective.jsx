@@ -12,7 +12,7 @@ class Selective extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedHotel: null,
+            selectedHotel: 0,
             startdate: new Date(),
             enddate: new Date(),
             adult: 1,
@@ -29,6 +29,7 @@ class Selective extends Component {
         const {
             hotels,
             states,
+            currentData,
         } = this.props
 
         let data = {
@@ -37,6 +38,16 @@ class Selective extends Component {
             enddate: this.state.enddate,
             adult: this.state.adult,
             children: this.state.children,
+        }
+
+        if (currentData.data) {
+            console.log("reserved hotel ->>> ", currentData.data.selectedHotel);
+            data.selectedHotel = currentData.data.selectedHotel;
+            data.startdate = currentData.data.startdate;
+            data.enddate = currentData.data.enddate;
+            data.adult = currentData.data.adult;
+            data.children = currentData.data.children;
+            console.log("adult ->>> ", currentData.data.adult);
         }
 
         return (
@@ -49,8 +60,14 @@ class Selective extends Component {
                             states(data);
                         })
                     }}>
-                        <option selected value='null'>Rezervasyon yapmak istediğiniz oteli seçiniz.</option>
-                        {hotels.map(function (hotel, index) { return <option value={hotel.id} key={index}>{hotel.hotel_name}</option> })}
+                        <option>Rezervasyon yapmak istediğiniz oteli seçiniz.</option>
+                        {hotels.map(function (hotel, index) {
+                            if (hotel.id == data.selectedHotel) {
+                                return <option value={hotel.id} key={index} selected>{hotel.hotel_name}</option>
+                            } else {
+                                return <option value={hotel.id} key={index}>{hotel.hotel_name}</option>
+                            }
+                        })}
                     </select>
                 </div>
                 <div className={styles.selective__options}>
@@ -60,7 +77,12 @@ class Selective extends Component {
                                 Giriş Tarihi
                             </div>
                             <div className={styles.select}>
-                                <DatePicker selected={this.state.startdate} onChange={date => { this.setState({ startdate: date }); states(data); }} />
+                                <DatePicker selected={data.startdate} onChange={date => {
+                                    this.setState({ startdate: date }, () => {
+                                        data = { ...data, startdate: this.state.startdate }
+                                        states(data);
+                                    });
+                                }} />
                                 <FontAwesomeIcon icon={faCalendarAlt} className={styles.faicon} />
                             </div>
                         </div>
@@ -71,7 +93,12 @@ class Selective extends Component {
                                 Çıkış Tarihi
                             </div>
                             <div className={styles.select}>
-                                <DatePicker selected={this.state.enddate} onChange={date => { this.setState({ enddate: date }); states(data); }} />
+                                <DatePicker selected={data.enddate} onChange={date => {
+                                    this.setState({ enddate: date }, () => {
+                                        data = { ...data, enddate: this.state.enddate }
+                                        states(data);
+                                    });
+                                }} />
                                 <FontAwesomeIcon icon={faCalendarAlt} className={styles.faicon} />
                             </div>
                         </div>
@@ -82,7 +109,12 @@ class Selective extends Component {
                                 Yetişkin Sayısı
                             </div>
                             <div className={styles.select}>
-                                <input type="number" name="adult" step="1" defaultValue="1" onChange={(e) => { this.handleChange(e); states(data) }} />
+                                <input type="number" name="adult" step="1" defaultValue={data.adult} onChange={e =>
+                                    this.setState({ adult: e.target.value }, () => {
+                                        data = { ...data, adult: this.state.adult }
+                                        states(data);
+                                    })}
+                                />
                             </div>
                         </div>
                     </div>
@@ -92,7 +124,12 @@ class Selective extends Component {
                                 Çocuk Sayısı
                             </div>
                             <div className={styles.select}>
-                                <input type="number" name="children" step="1" defaultValue="1" onChange={(e) => { this.handleChange(e); states(data) }} />
+                                <input type="number" name="children" step="1" defaultValue={data.children} onChange={e =>
+                                    this.setState({ children: e.target.value }, () => {
+                                        data = { ...data, children: this.state.children }
+                                        states(data);
+                                    })}
+                                />
                             </div>
                         </div>
                     </div>
@@ -106,7 +143,7 @@ class Selective extends Component {
 Selective.propTypes = {
     hotels: PropTypes.string,
     states: PropTypes.func,
-
+    currentData: PropTypes.string,
 }
 
 export default Selective
