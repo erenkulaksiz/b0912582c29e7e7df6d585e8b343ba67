@@ -28,13 +28,11 @@ class Info extends Component {
             if (detail.id == selectiveData.data.selectedHotel) {
                 detail.room_type.map(function (roomDetail, index) {
                     if (roomDetail.id == selectedRoom) {
-                        console.log("SELECTED ROOM", roomDetail);
                         selectedRoomDetail.push(roomDetail);
                     }
                 })
                 detail.room_scenic.map(function (scenic, index) {
                     if (scenic.id == selectedView) {
-                        console.log("SELECTED VIEW", scenic);
                         selectedViewDetail.push(scenic);
                     }
                 })

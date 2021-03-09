@@ -32,6 +32,9 @@ export default (state = defaultState, action) => {
     case 'SELECT_VIEW':
       state.viewSelected = action.payload;
       return state
+    case 'SET_DEFAULTS':
+      state = action.payload;
+      return state
     default:
       return state
   }

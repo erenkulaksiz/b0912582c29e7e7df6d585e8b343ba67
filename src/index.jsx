@@ -37,11 +37,25 @@ const hotels = [{ "id": "1", "hotel_name": "Bosphorus Hotel" },
 
 const footerProgress = ['Kaydet ve Devam Et', 'Kaydet ve Devam Et', 'Ödeme Yap ve Bitir'];
 
+const defaults = {
+    progress: 1,
+    selectiveData: {
+        selectedHotel: 0,
+        startdate: null,
+        enddate: null,
+        adult: 1,
+        children: 1,
+        child_status: true,
+        max_adult_size: 5,
+    },
+    roomSelected: 0,
+    viewSelected: 0,
+}
+
 const App = () => {
 
     const progress = store.getState().progress;
     const selectiveData = store.getState().selectiveData;
-
     const selectedRoom = store.getState().roomSelected.data;
     const selectedView = store.getState().viewSelected.data;
 
@@ -109,6 +123,11 @@ const App = () => {
 
     }
 
+    const newReservation = () => {
+        console.log("new reservation >>>");
+        store.dispatch({ type: 'SET_DEFAULTS', payload: defaults });
+    }
+
     return (
         <div className={styles.container}>
             <Header onButtonPress={() => { alert("selam") }} />
@@ -168,7 +187,11 @@ const App = () => {
 
                     {progress == 4 &&
                         <div>
-                            <GotReservation />
+                            <GotReservation
+                                onNew={() => { newReservation(); }}
+                                onUpdate={() => { }}
+                                onCancel={() => { }}
+                            />
                             <Info
                                 hotelDetails={HotelDetails}
                                 selectiveData={selectiveData}
