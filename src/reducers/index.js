@@ -11,6 +11,7 @@ const defaultState = {
     max_adult_size: 5,
   },
   roomSelected: 0,
+  viewSelected: 0,
 }
 
 export default (state = defaultState, action) => {
@@ -27,6 +28,9 @@ export default (state = defaultState, action) => {
       return state
     case 'SELECT_ROOM':
       state.roomSelected = action.payload;
+      return state
+    case 'SELECT_VIEW':
+      state.viewSelected = action.payload;
       return state
     default:
       return state

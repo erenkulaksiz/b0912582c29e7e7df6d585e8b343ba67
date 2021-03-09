@@ -6,6 +6,11 @@
       padding-bottom: 12px;
       padding-left: 0px;
       padding-right: 0px;
+      .wrapper {
+        .paymentWrapper {
+          flex-direction: column;
+        }
+      }
     }
   }
 }
@@ -18,6 +23,11 @@
       padding-bottom: 24px;
       padding-left: 32px;
       padding-right: 32px;
+      .wrapper {
+        .paymentWrapper {
+          flex-direction: column;
+        }
+      }
     }
   }
 }
@@ -29,6 +39,11 @@
       padding-bottom: 32px;
       padding-left: 64px;
       padding-right: 64px;
+      .wrapper {
+        .paymentWrapper {
+          flex-direction: row;
+        }
+      }
     }
   }
 }
@@ -41,16 +56,27 @@
   &__content {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    padding-top: 132px;
     width: 100%;
     .wrapper {
       display: flex;
       flex-direction: column;
+      height: 100%;
       width: 100%;
-      overflow: scroll;
       -ms-overflow-style: none;
       scrollbar-width: none;
       white-space: normal;
+      margin-bottom: 64px;
+      .paymentWrapper {
+        display: flex;
+        width: 100%;
+        margin-top: 24px;
+        padding-bottom: 132px;
+      }
+      .selectiveWrapper {
+        display: flex;
+        flex-direction: column;
+      }
     }
     .wrapper::-webkit-scrollbar {
       display: none;

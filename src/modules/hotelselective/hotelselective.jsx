@@ -22,7 +22,13 @@ class HotelSelective extends Component {
                 <div className={styles.details}>
                     <div className={styles.details__title}>
                         <div className={styles.title}>
-                            {hotels[states.data.selectedHotel - 1].hotel_name}
+                            {
+                                hotels.map(function (hotel, index) {
+                                    if (hotel.id == states.data.selectedHotel) {
+                                        return hotel.hotel_name
+                                    }
+                                })
+                            }
                         </div>
                         <div className={styles.location}>
                             {hotelDetails.map(function (detail, index) {

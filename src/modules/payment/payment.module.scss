@@ -1,0 +1,107 @@
+$font_size: 12px;
+@mixin font($size: $font_size, $bold: 400) {
+  font-family: "Roboto", Helvetica, sans-serif;
+  font-size: $size;
+  font-weight: $bold;
+}
+
+@media only screen and (max-width: 600px) {
+  .payment {
+    width: 100%;
+    .card {
+      margin-bottom: 16px;
+    }
+  }
+}
+@media only screen and (min-width: 600px) {
+  .payment {
+    width: 100%;
+    .card {
+      margin-bottom: 16px;
+    }
+  }
+}
+@media only screen and (min-width: 768px) {
+  .payment {
+    width: 60%;
+    .card {
+      margin-bottom: 0px;
+    }
+  }
+}
+
+.payment {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  border-style: solid;
+  border-color: #f2f2f2;
+  border-width: 2px;
+  border-radius: 8px;
+  padding: 18px;
+  .card {
+    display: flex;
+    flex: 50%;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    .cardno {
+      display: flex;
+      height: 26px;
+    }
+  }
+  .form {
+    display: flex;
+    flex: 50%;
+    border-style: solid;
+    border-width: 1px;
+    padding: 12px;
+    position: relative;
+    flex-direction: column;
+    .formTitle {
+      display: flex;
+      position: absolute;
+      margin-top: -22px;
+      background-color: white;
+      padding-right: 4px;
+      padding-left: 4px;
+      @include font(16px, 600);
+    }
+    &__name {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 12px;
+      input {
+        width: 100%;
+      }
+    }
+    &__card {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 12px;
+      input {
+        width: 100%;
+      }
+    }
+    &__ccv {
+      display: flex;
+      width: 100%;
+      padding: 12px;
+      .date {
+        display: flex;
+        flex-direction: column;
+        flex: 80%;
+        select {
+          margin-right: 12px;
+        }
+      }
+      .ccv {
+        display: flex;
+        flex-direction: column;
+        flex: 20%;
+      }
+    }
+  }
+}

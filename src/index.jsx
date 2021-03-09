@@ -15,6 +15,10 @@ import Stepper from './modules/stepper/stepper';
 import Selective from './modules/selective/selective';
 import HotelSelective from './modules/hotelselective/hotelselective';
 import RoomSelective from './modules/roomselective/roomselective';
+import ViewSelective from './modules/viewselective/viewselective';
+import Payment from './modules/payment/payment';
+import Info from './modules/info/info';
+import GotReservation from './modules/gotreservation/gotreservation';
 
 import HotelDetails from './hoteldetails.jsx'
 
@@ -39,6 +43,7 @@ const App = () => {
     const selectiveData = store.getState().selectiveData;
 
     const selectedRoom = store.getState().roomSelected.data;
+    const selectedView = store.getState().viewSelected.data;
 
     const backProgress = () => {
         // senle işim olcak bekle
@@ -70,7 +75,8 @@ const App = () => {
                         } else {
                             store.dispatch({ type: 'CONTINUE' });
                             console.log("hoteldetails ", HotelDetails);
-                            console.log("progress: ", progress)
+                            console.log("progress: ", progress);
+                            window.scrollTo(0, 0);
                         }
                     }
                 } else {
@@ -84,11 +90,22 @@ const App = () => {
             if (!selectedRoom) {
                 alert("choose a room");
             } else {
-                store.dispatch({ type: 'CONTINUE' });
-                console.log("hoteldetails ", HotelDetails);
-                console.log("progress: ", progress)
+                if (!selectedView != 0) {
+                    alert("choose a view");
+                } else {
+                    store.dispatch({ type: 'CONTINUE' });
+                    console.log("hoteldetails ", HotelDetails);
+                    console.log("progress: ", progress);
+                    window.scrollTo(0, 0);
+                }
             }
+        } else if (progress == 3) {
+            // Last progress
+            store.dispatch({ type: 'CONTINUE' });
+            window.scrollTo(0, 0);
         }
+
+        console.log(progress, " progress");
 
     }
 
@@ -96,7 +113,7 @@ const App = () => {
         <div className={styles.container}>
             <Header onButtonPress={() => { alert("selam") }} />
             <div className={styles.container__content}>
-                <Stepper step={progress} />
+                {progress != 4 && <Stepper step={progress} />}
                 <div className={styles.wrapper}>
 
                     {progress == 1 &&
@@ -116,18 +133,56 @@ const App = () => {
                                 hotelDetails={HotelDetails}
                                 child={selectiveData.data.child_status}
                             />
-                            <RoomSelective
-                                cacheSelectedRoom={selectedRoom}
-                                hotelDetails={HotelDetails}
-                                selectedHotel={selectiveData.data.selectedHotel}
-                                selectedRoom={data => { store.dispatch({ type: 'SELECT_ROOM', payload: { data } }); }}
-                            />
+                            <div className={styles.selectiveWrapper}>
+                                <RoomSelective
+                                    cacheSelectedRoom={selectedRoom}
+                                    hotelDetails={HotelDetails}
+                                    selectedHotel={selectiveData.data.selectedHotel}
+                                    selectedRoom={data => { store.dispatch({ type: 'SELECT_ROOM', payload: { data } }); }}
+                                />
+                                <ViewSelective
+                                    cacheSelectedView={selectedView}
+                                    hotelDetails={HotelDetails}
+                                    selectedHotel={selectiveData.data.selectedHotel}
+                                    selectedView={data => { store.dispatch({ type: 'SELECT_VIEW', payload: { data } }); }}
+                                />
+                            </div>
                         </>}
 
-                    {progress == 3 && <div>onizleme</div>}
+                    {progress == 3 &&
+                        <div className={styles.paymentWrapper}>
+                            <Payment
+                                paymentDetails={data => { console.log("payment data", data); }}
+                            />
+                            <Info
+                                hotelDetails={HotelDetails}
+                                selectiveData={selectiveData}
+                                hotels={hotels}
+                                selectedRoom={selectedRoom}
+                                selectedView={selectedView}
+                                submitCouponCode={data => { alert(data) }}
+                                withCoupon={true}
+                            />
+                        </div>
+                    }
+
+                    {progress == 4 &&
+                        <div>
+                            <GotReservation />
+                            <Info
+                                hotelDetails={HotelDetails}
+                                selectiveData={selectiveData}
+                                hotels={hotels}
+                                selectedRoom={selectedRoom}
+                                selectedView={selectedView}
+                                withCoupon={false}
+                            />
+                        </div>
+                    }
 
                 </div>
             </div>
+
             {progress != 4 && <Footer onBack={() => {
                 backProgress();
             }}

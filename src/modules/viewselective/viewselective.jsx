@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import styles from './roomselective.module.scss'
+import styles from './viewselective.module.scss'
 import PropTypes from 'prop-types'
 
-class RoomSelective extends Component {
+class ViewSelective extends Component {
 
     constructor(props) {
         super(props);
@@ -11,38 +11,38 @@ class RoomSelective extends Component {
     render() {
 
         const {
-            cacheSelectedRoom,
+            cacheSelectedView,
             hotelDetails,
             selectedHotel,
-            selectedRoom,
+            selectedView,
         } = this.props
 
-        let rooms = [];
+        let views = [];
 
-        const Room = (checked, room) => {
+        const View = (checked, view) => {
 
-            return (<div className={styles.room}>
+            return (<div className={styles.view}>
                 <input
                     type="radio"
-                    id={room.title}
-                    name={"room"}
-                    value={room.id}
-                    className={styles.roomRadio}
-                    onChange={(e) => { selectedRoom(e.target.value) }}
+                    id={view.id}
+                    name={"view"}
+                    value={view.id}
+                    className={styles.viewRadio}
+                    onChange={(e) => { console.log("clicked this ", e.target.value); selectedView(e.target.value) }}
                     checked={checked}
                 />
-                <label for={room.title} className={styles.roomLabel}>
+                <label for={view.id} className={styles.viewLabel}>
                     <div className={styles.innerDetails}>
                         <div className={styles.innerDetails__title}>
-                            {room.title}
+                            {view.title}
                         </div>
-                        <img src={room.photo} className={styles.roomImg} />
+                        <img src={view.photo} className={styles.viewImg} />
                         <div className={styles.innerDetails__desc}>
                             <div className={styles.details}>
-                                5 gün <br /> 1 yetişkin
+                                Fiyata Etki Oranı
                             </div>
                             <div className={styles.price}>
-                                {room.price}TL
+                                +{view.price_rate}%
                             </div>
                         </div>
                     </div>
@@ -50,33 +50,33 @@ class RoomSelective extends Component {
             </div>);
         }
 
-        console.log("states ", cacheSelectedRoom);
+        console.log("states ", cacheSelectedView);
 
         return (
-            <div className={styles.roomselective}>
+            <div className={styles.viewselective}>
                 <div className={styles.title}>
-                    Oda Tipi Seçimi
+                    Manzara Seçimi
                 </div>
                 <div className={styles.bar}></div>
-                <div className={styles.roomtype}>
+                <div className={styles.viewtype}>
                     {hotelDetails.map(function (hotel, index) {
                         if (hotel.id == selectedHotel) {
-                            hotel.room_type.map(function (room, index) {
+                            hotel.room_scenic.map(function (view, index) {
                                 //console.log("room ", room);
-                                if (cacheSelectedRoom) {
-                                    if (room.id == cacheSelectedRoom) {
-                                        rooms.push(Room(true, room));
+                                if (cacheSelectedView) {
+                                    if (view.id == cacheSelectedView) {
+                                        views.push(View(true, view));
                                     } else {
-                                        rooms.push(Room(false, room));
+                                        views.push(View(false, view));
                                     }
                                 } else {
-                                    rooms.push(Room(false, room));
+                                    views.push(View(false, view));
                                 }
                             })
                         }
                     })}
 
-                    {rooms}
+                    {views}
 
                 </div>
             </div>
@@ -85,11 +85,11 @@ class RoomSelective extends Component {
 
 }
 
-RoomSelective.propTypes = {
-    cacheSelectedRoom: PropTypes.string,
+ViewSelective.propTypes = {
+    cacheSelectedView: PropTypes.string,
     hotelDetails: PropTypes.string,
     selectedHotel: PropTypes.number,
-    selectedRoom: PropTypes.string,
+    selectedView: PropTypes.string,
 }
 
-export default RoomSelective
+export default ViewSelective
