@@ -20,37 +20,12 @@ import Payment from './modules/payment/payment';
 import Info from './modules/info/info';
 import GotReservation from './modules/gotreservation/gotreservation';
 
-import HotelDetails from './hoteldetails.jsx'
-
 const store = createStore(reducer);
-
-const hotels = [{ "id": "1", "hotel_name": "Bosphorus Hotel" },
-{ "id": "2", "hotel_name": "Big Istanbul Hotel" },
-{ "id": "3", "hotel_name": "Dela Hotel" },
-{ "id": "4", "hotel_name": "Aegean Hotel" },
-{ "id": "5", "hotel_name": "Lara Hotel" },
-{ "id": "6", "hotel_name": "Bodrum Hotel" },
-{ "id": "7", "hotel_name": "Visnezade Istanbul Hotel" },
-{ "id": "8", "hotel_name": "Konak Istanbul Hotel" },
-{ "id": "9", "hotel_name": "Dardania Hotel" },
-{ "id": "10", "hotel_name": "Alanya Hotel" }]
 
 const footerProgress = ['Kaydet ve Devam Et', 'Kaydet ve Devam Et', 'Ödeme Yap ve Bitir'];
 
-const defaults = {
-    progress: 1,
-    selectiveData: {
-        selectedHotel: 0,
-        startdate: null,
-        enddate: null,
-        adult: 1,
-        children: 1,
-        child_status: true,
-        max_adult_size: 5,
-    },
-    roomSelected: 0,
-    viewSelected: 0,
-}
+const hotelsRoute = "https://5f6d939160cf97001641b049.mockapi.io/tkn/hotels";
+const hotelDetailsRoute = "https://5f6d939160cf97001641b049.mockapi.io/tkn/hotel-details";
 
 const App = () => {
 
@@ -58,6 +33,65 @@ const App = () => {
     const selectiveData = store.getState().selectiveData;
     const selectedRoom = store.getState().roomSelected.data;
     const selectedView = store.getState().viewSelected.data;
+    const paymentDetails = store.getState().paymentDetails.data;
+    const hotelList = store.getState().hotels;
+    const hotelDetailList = store.getState().hotelDetails;
+
+    const loadHotels = async () => {
+        console.log("@loadHotels");
+        try {
+            await axios.get(hotelsRoute)
+                .then(res => {
+                    const data = res.data;
+                    //console.log(data);
+                    console.log("LOADED HOTELS: ", data);
+                    store.dispatch({ type: 'SET_HOTELS', payload: data });
+                })
+                .catch(err => {
+                    console.log(err.response.status);
+                    if (err.response.status === 404) {
+                        throw new Error('404');
+                    }
+                    throw err;
+                })
+        } catch (err) {
+            console.log("%cCant fetch hotels:" + err, "color:red");
+        }
+    }
+
+    const loadHotelDetails = async () => {
+        console.log("@loadDetails");
+        try {
+            await axios.get(hotelDetailsRoute)
+                .then(res => {
+                    const data = res.data;
+                    //console.log(data);
+                    console.log("LOADED DETAILS: ", data);
+                    store.dispatch({ type: 'SET_DETAILS', payload: data });
+                })
+                .catch(err => {
+                    console.log(err.response.status);
+                    if (err.response.status === 404) {
+                        throw new Error('404');
+                    }
+                    throw err;
+                })
+        } catch (err) {
+            console.log("Cant fetch details:" + err, "color:red");
+        }
+    }
+
+    if (hotelList) {
+        if (hotelList.length < 1) {
+            loadHotels();
+        }
+    }
+
+    if (hotelDetailList) {
+        if (hotelDetailList.length < 1) {
+            loadHotelDetails();
+        }
+    }
 
     const backProgress = () => {
         // senle işim olcak bekle
@@ -88,7 +122,7 @@ const App = () => {
                             alert("choose a end date");
                         } else {
                             store.dispatch({ type: 'CONTINUE' });
-                            console.log("hoteldetails ", HotelDetails);
+                            console.log("hoteldetails ", hotelDetailList);
                             console.log("progress: ", progress);
                             window.scrollTo(0, 0);
                         }
@@ -108,15 +142,44 @@ const App = () => {
                     alert("choose a view");
                 } else {
                     store.dispatch({ type: 'CONTINUE' });
-                    console.log("hoteldetails ", HotelDetails);
+                    console.log("hoteldetails ", hotelDetailList);
                     console.log("progress: ", progress);
                     window.scrollTo(0, 0);
                 }
             }
         } else if (progress == 3) {
             // Last progress
-            store.dispatch({ type: 'CONTINUE' });
-            window.scrollTo(0, 0);
+            console.log("paymentDetails", paymentDetails);
+
+            if (paymentDetails) {
+                if (paymentDetails.name) {
+                    if (paymentDetails.number) {
+                        if (paymentDetails.expiryDate) {
+                            if (paymentDetails.expiryYear) {
+                                if (paymentDetails.cvc) {
+                                    // success
+                                    store.dispatch({ type: 'CONTINUE' });
+                                    window.scrollTo(0, 0);
+                                } else {
+                                    alert("enter cvc");
+                                }
+                            } else {
+                                alert("enter expiryYear");
+                            }
+                        } else {
+                            alert("enter expiryDate");
+                        }
+                    } else {
+                        alert("enter card number");
+                    }
+                } else {
+                    alert("enter name");
+                }
+            } else {
+                alert("fill card data");
+            }
+
+
         }
 
         console.log(progress, " progress");
@@ -125,7 +188,49 @@ const App = () => {
 
     const newReservation = () => {
         console.log("new reservation >>>");
-        store.dispatch({ type: 'SET_DEFAULTS', payload: defaults });
+
+        store.dispatch({ type: 'SET_HOTELS', payload: [] });
+        store.dispatch({ type: 'SET_DETAILS', payload: [] });
+
+        store.dispatch({ type: 'SET_PROGRESS', payload: 1 });
+        store.dispatch({
+            type: 'SET_SELECTIVEDATA', payload: {
+                selectiveData: {
+                    selectedHotel: 0,
+                    startdate: null,
+                    enddate: null,
+                    adult: 1,
+                    children: 1,
+                    child_status: true,
+                    max_adult_size: 5,
+                },
+            }
+        });
+        store.dispatch({
+            type: 'SET_ROOMWVIEW', payload: {
+                roomSelected: 0,
+                viewSelected: 0
+            }
+        });
+        store.dispatch({
+            type: 'SET_PAYMENT', payload: {
+                cvc: "",
+                expiryDate: "",
+                expiryYear: "",
+                name: "",
+                number: "",
+            }
+        })
+    }
+
+    const updateReservation = () => {
+        store.dispatch({ type: 'SET_PROGRESS', payload: 1 });
+    }
+
+    const cancelReservation = () => {
+        if (window.confirm('rezervasyonu cidden iptal etmek ister misiniz?')) {
+            newReservation();
+        }
     }
 
     return (
@@ -135,48 +240,53 @@ const App = () => {
                 {progress != 4 && <Stepper step={progress} />}
                 <div className={styles.wrapper}>
 
-                    {progress == 1 &&
+                    {
+                        progress == 1 &&
                         <Selective
-                            hotels={hotels}
-                            states={data => { console.log(data); store.dispatch({ type: 'SELECTIVE_DATA', payload: { data } }); }}
+                            hotels={hotelList}
+                            states={data => { store.dispatch({ type: 'SELECTIVE_DATA', payload: { data } }); }}
                             currentData={selectiveData}
-                            hotels={hotels}
-                            hotelDetails={HotelDetails}
-                        />}
+                            hotelDetails={hotelDetailList}
+                        />
+                    }
 
-                    {progress == 2 &&
+                    {
+                        progress == 2 &&
                         <>
                             <HotelSelective
-                                hotels={hotels}
+                                hotels={hotelList}
                                 states={selectiveData}
-                                hotelDetails={HotelDetails}
+                                hotelDetails={hotelDetailList}
                                 child={selectiveData.data.child_status}
                             />
                             <div className={styles.selectiveWrapper}>
                                 <RoomSelective
                                     cacheSelectedRoom={selectedRoom}
-                                    hotelDetails={HotelDetails}
+                                    hotelDetails={hotelDetailList}
                                     selectedHotel={selectiveData.data.selectedHotel}
                                     selectedRoom={data => { store.dispatch({ type: 'SELECT_ROOM', payload: { data } }); }}
                                 />
                                 <ViewSelective
                                     cacheSelectedView={selectedView}
-                                    hotelDetails={HotelDetails}
+                                    hotelDetails={hotelDetailList}
                                     selectedHotel={selectiveData.data.selectedHotel}
                                     selectedView={data => { store.dispatch({ type: 'SELECT_VIEW', payload: { data } }); }}
                                 />
                             </div>
-                        </>}
+                        </>
+                    }
 
-                    {progress == 3 &&
+                    {
+                        progress == 3 &&
                         <div className={styles.paymentWrapper}>
                             <Payment
-                                paymentDetails={data => { console.log("payment data", data); }}
+                                paymentDetails={data => { store.dispatch({ type: 'SET_PAYMENT', payload: { data } }); }}
+                                currentPaymentDetails={paymentDetails}
                             />
                             <Info
-                                hotelDetails={HotelDetails}
+                                hotelDetails={hotelDetailList}
                                 selectiveData={selectiveData}
-                                hotels={hotels}
+                                hotels={hotelList}
                                 selectedRoom={selectedRoom}
                                 selectedView={selectedView}
                                 submitCouponCode={data => { alert(data) }}
@@ -185,17 +295,18 @@ const App = () => {
                         </div>
                     }
 
-                    {progress == 4 &&
+                    {
+                        progress == 4 &&
                         <div>
                             <GotReservation
                                 onNew={() => { newReservation(); }}
-                                onUpdate={() => { }}
-                                onCancel={() => { }}
+                                onUpdate={() => { updateReservation(); }}
+                                onCancel={() => { cancelReservation(); }}
                             />
                             <Info
-                                hotelDetails={HotelDetails}
+                                hotelDetails={hotelDetailList}
                                 selectiveData={selectiveData}
-                                hotels={hotels}
+                                hotels={hotelList}
                                 selectedRoom={selectedRoom}
                                 selectedView={selectedView}
                                 withCoupon={false}

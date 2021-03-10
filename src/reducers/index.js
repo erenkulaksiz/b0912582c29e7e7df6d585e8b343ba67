@@ -1,5 +1,11 @@
 
 const defaultState = {
+  hotels: [],
+  hotelDetails: [],
+  isLoading: {
+    hotels: true,
+    details: true,
+  },
   progress: 1,
   selectiveData: {
     selectedHotel: 0,
@@ -12,6 +18,13 @@ const defaultState = {
   },
   roomSelected: 0,
   viewSelected: 0,
+  paymentDetails: {
+    cvc: "",
+    expiryDate: "",
+    expiryYear: "",
+    name: "",
+    number: "",
+  }
 }
 
 export default (state = defaultState, action) => {
@@ -32,8 +45,24 @@ export default (state = defaultState, action) => {
     case 'SELECT_VIEW':
       state.viewSelected = action.payload;
       return state
-    case 'SET_DEFAULTS':
-      state = action.payload;
+    case 'SET_PROGRESS':
+      state.progress = action.payload;
+      return state
+    case 'SET_SELECTIVEDATA':
+      state.selectiveData = action.payload;
+      return state
+    case 'SET_PAYMENT':
+      state.paymentDetails = action.payload;
+      return state
+    case 'SET_ROOMWVIEW':
+      state.roomSelected = action.payload.roomSelected;
+      state.viewSelected = action.payload.viewSelected;
+      return state
+    case 'SET_HOTELS':
+      state.hotels = action.payload;
+      return state
+    case 'SET_DETAILS':
+      state.hotelDetails = action.payload;
       return state
     default:
       return state

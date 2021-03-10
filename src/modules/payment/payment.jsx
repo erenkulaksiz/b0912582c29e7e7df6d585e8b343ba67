@@ -28,43 +28,36 @@ class Payment extends Component {
         };
     }
 
-    handleCallback = ({ issuer }, isValid) => {
-        if (isValid) {
-            this.setState({ issuer });
-        }
-    };
-
-    handleInputFocus = ({ target }) => {
-        this.setState({
-            focused: target.name
-        });
-    };
-
-    handleInputChange = ({ target }) => {
-        if (target.name === "number") {
-            target.value = formatCreditCardNumber(target.value);
-        } else if (target.name === "expiry") {
-            target.value = formatExpirationDate(target.value);
-        } else if (target.name === "cvc") {
-            target.value = formatCVC(target.value);
-        }
-
-        this.setState({ [target.name]: target.value });
-    };
-
-
     render() {
 
         const { name, number, expiryDate, expiryYear, cvc, focused } = this.state;
 
         const {
             paymentDetails,
+            currentPaymentDetails,
         } = this.props
-
-        paymentDetails(this.state);
 
         const expiryDates = [];
         const expiryYears = [];
+
+        let data = {
+            name: this.state.name,
+            number: this.state.number,
+            expiryDate: this.state.expiryDate,
+            expiryYear: this.state.expiryYear,
+            cvc: this.state.cvc
+        }
+
+        if (currentPaymentDetails) {
+            console.log("current payment details: ", currentPaymentDetails);
+            data = {
+                name: currentPaymentDetails.name,
+                number: currentPaymentDetails.number,
+                expiryDate: currentPaymentDetails.expiryDate,
+                expiryYear: currentPaymentDetails.expiryYear,
+                cvc: currentPaymentDetails.cvc,
+            }
+        }
 
         for (let i = 1; i <= 12; i++) {
             expiryDates.push(<option value={i}>{i}</option>)
@@ -72,6 +65,33 @@ class Payment extends Component {
         for (let i = 2021; i <= 2040; i++) {
             expiryYears.push(<option value={i}>{i}</option>)
         }
+
+        const handleCallback = ({ issuer }, isValid) => {
+            if (isValid) {
+                this.setState({ issuer });
+            }
+        };
+
+        const handleInputFocus = (target) => {
+            this.setState({
+                focused: target.name
+            });
+        };
+
+        const handleInputChange = (target) => {
+            if (target.name === "number") {
+                target.value = formatCreditCardNumber(target.value);
+            } else if (target.name === "expiry") {
+                target.value = formatExpirationDate(target.value);
+            } else if (target.name === "cvc") {
+                target.value = formatCVC(target.value);
+            }
+            this.setState({ [target.name]: target.value }, () => {
+                data = { ...data, [target.name]: target.value };
+                paymentDetails(data);
+            });
+
+        };
 
         return (
             <div className={styles.payment}>
@@ -82,7 +102,7 @@ class Payment extends Component {
                         expiry={expiryYear + "/" + expiryDate}
                         cvc={cvc}
                         focused={focused}
-                        callback={this.handleCallback}
+                        callback={handleCallback}
                     />
                 </div>
                 <div className={styles.form}>
@@ -99,9 +119,12 @@ class Payment extends Component {
                                 name="name"
                                 className="form-control"
                                 placeholder="Kartın Üzerindeki İsmi Giriniz"
+                                defaultValue={data.name}
                                 required
-                                onChange={this.handleInputChange}
-                                onFocus={this.handleInputFocus}
+                                onChange={(e) => {
+                                    handleInputChange(e.target);
+                                }}
+                                onFocus={(e) => { handleInputFocus(e.target) }}
                             />
                         </div>
                     </div>
@@ -115,10 +138,13 @@ class Payment extends Component {
                                 name="number"
                                 className="form-control"
                                 placeholder="Kart Numarasını Giriniz"
+                                defaultValue={data.number}
                                 pattern="[\d| ]{16,22}"
                                 required
-                                onChange={this.handleInputChange}
-                                onFocus={this.handleInputFocus}
+                                onChange={(e) => {
+                                    handleInputChange(e.target);
+                                }}
+                                onFocus={(e) => { handleInputFocus(e.target); }}
                             />
                         </div>
                     </div>
@@ -128,11 +154,21 @@ class Payment extends Component {
                                 Kart Son Kullanma Tarihi
                             </div>
                             <div className={styles.input}>
-                                <select name="expiryDate" onChange={this.handleInputChange} onFocus={this.handleInputFocus}>
+                                <select name="expiryDate"
+                                    defaultValue={data.expiryDate}
+                                    onChange={(e) => {
+                                        handleInputChange(e.target);
+                                    }}
+                                    onFocus={(e) => { handleInputFocus(e.target); }}>
                                     <option>Ay</option>
                                     {expiryDates}
                                 </select>
-                                <select name="expiryYear" onChange={this.handleInputChange} onFocus={this.handleInputFocus}>
+                                <select name="expiryYear"
+                                    defaultValue={data.expiryYear}
+                                    onChange={(e) => {
+                                        handleInputChange(e.target);
+                                    }}
+                                    onFocus={(e) => { handleInputFocus(e.target); }}>
                                     <option>Yıl</option>
                                     {expiryYears}
                                 </select>
@@ -148,10 +184,13 @@ class Payment extends Component {
                                     name="cvc"
                                     className="form-control"
                                     placeholder="CCV Giriniz"
+                                    defaultValue={data.ccv}
                                     pattern="\d{3,4}"
                                     required
-                                    onChange={this.handleInputChange}
-                                    onFocus={this.handleInputFocus}
+                                    onChange={(e) => {
+                                        handleInputChange(e.target);
+                                    }}
+                                    onFocus={(e) => { handleInputFocus(e.target) }}
                                 />
                             </div>
                         </div>
@@ -166,6 +205,7 @@ class Payment extends Component {
 
 Payment.propTypes = {
     paymentDetails: PropTypes.func,
+    currentPaymentDetails: PropTypes.string,
 }
 
 export default Payment
