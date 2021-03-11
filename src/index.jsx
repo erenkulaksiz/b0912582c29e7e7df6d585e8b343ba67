@@ -400,7 +400,6 @@ const App = () => {
                                 selectedRoom={selectedRoom}
                                 selectedView={selectedView}
                                 withCoupon={false}
-                                price={data => { console.log(data); price = data; }}
                             />
                         </div>
                     }
