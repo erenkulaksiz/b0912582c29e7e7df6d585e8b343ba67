@@ -380,7 +380,7 @@ const App = () => {
                                 submitCouponCode={data => { checkCouponCode(data); }}
                                 couponDetails={couponDetails}
                                 withCoupon={true}
-                                price={data => { console.log(data); price = data; }}
+                                price={data => { price = data; }}
                             />
                         </div>
                     }
