@@ -24,7 +24,13 @@ const defaultState = {
     expiryYear: "",
     name: "",
     number: "",
-  }
+  },
+  coupon: {
+    applied: false,
+    discount: 0,
+    code: "",
+  },
+  price: "",
 }
 
 export default (state = defaultState, action) => {
@@ -63,6 +69,13 @@ export default (state = defaultState, action) => {
       return state
     case 'SET_DETAILS':
       state.hotelDetails = action.payload;
+      return state
+    case 'SET_COUPON':
+      state.coupon = action.payload;
+      console.log("set coupon status to >>> ", action.payload);
+      return state
+    case 'SET_PRICE':
+      state.price = action.payload;
       return state
     default:
       return state

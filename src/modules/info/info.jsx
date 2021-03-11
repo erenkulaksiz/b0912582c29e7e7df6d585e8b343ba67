@@ -6,7 +6,9 @@ class Info extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { couponCode: "" };
+        this.state = {
+            couponCode: ""
+        };
     }
 
     render() {
@@ -18,7 +20,9 @@ class Info extends Component {
             selectedRoom,
             selectedView,
             submitCouponCode,
-            withCoupon
+            withCoupon,
+            couponDetails,
+            price,
         } = this.props
 
         const selectedRoomDetail = [];
@@ -40,7 +44,27 @@ class Info extends Component {
         })
 
         const totalPriceWithoutCalc = parseInt(selectedRoomDetail[0].price) * 5;
-        let totalPrice = Math.floor(totalPriceWithoutCalc + (totalPriceWithoutCalc * selectedViewDetail[0].price_rate) / 100);
+        let totalPrice;
+        if (couponDetails) {
+            if (couponDetails.applied) {
+                totalPrice = Math.floor(totalPriceWithoutCalc + (totalPriceWithoutCalc * selectedViewDetail[0].price_rate) / 100) - couponDetails.discount;
+                // return if coupon showing
+                if (withCoupon) {
+                    price(totalPrice);
+                }
+            } else {
+                totalPrice = Math.floor(totalPriceWithoutCalc + (totalPriceWithoutCalc * selectedViewDetail[0].price_rate) / 100);
+                if (withCoupon) {
+                    price(totalPrice);
+                }
+            }
+        } else {
+            totalPrice = Math.floor(totalPriceWithoutCalc + (totalPriceWithoutCalc * selectedViewDetail[0].price_rate) / 100);
+            if (withCoupon) {
+                price(totalPrice);
+            }
+        }
+
 
         const handleCouponChange = (e) => {
             this.setState({ couponCode: e.target.value });
@@ -127,7 +151,11 @@ class Info extends Component {
                 {
                     withCoupon && <div className={styles.couponWrapper}>
                         <div className={styles.coupon}>
-                            <input type="text" name={'couponCode'} onChange={e => { handleCouponChange(e); }} placeholder="Kupon Kodu"></input>
+                            <input type="text"
+                                name={'couponCode'}
+                                onChange={e => { handleCouponChange(e); }}
+                                placeholder="Kupon Kodu">
+                            </input>
                             <button onClick={() => { submitCouponCode(this.state.couponCode) }}>Kodu Kullan</button>
                         </div>
                     </div>
@@ -157,14 +185,17 @@ class Info extends Component {
                             {totalPriceWithoutCalc} TL
                         </div>
                     </div>
-                    <div className={styles.price}>
-                        <div className={styles.left}>
-                            <b>İndirim</b> (CODE100)
-                        </div>
-                        <div className={styles.right}>
-                            -100 TL
-                        </div>
-                    </div>
+                    {
+                        couponDetails && couponDetails.applied ?
+                            <div className={styles.price}>
+                                <div className={styles.left}>
+                                    <b>İndirim</b> ({couponDetails.code})
+                            </div>
+                                <div className={styles.right}>
+                                    -{couponDetails.discount} TL
+                            </div>
+                            </div> : null
+                    }
                     <div className={styles.bar}></div>
                     <div className={styles.finalPrice}>
                         <div className={styles.finalPrice__title}>
@@ -189,6 +220,8 @@ Info.propTypes = {
     selectedRoom: PropTypes.string,
     withCoupon: PropTypes.bool,
     submitCouponCode: PropTypes.func,
+    couponDetails: PropTypes.string,
+    price: PropTypes.func,
 }
 
 export default Info

@@ -93,14 +93,18 @@ class Payment extends Component {
 
         };
 
+        //
+        // !!!!!
+        // cardda state yerine data kullan;
+
         return (
             <div className={styles.payment}>
                 <div className={styles.card}>
                     <Card
-                        number={number}
-                        name={name}
-                        expiry={expiryYear + "/" + expiryDate}
-                        cvc={cvc}
+                        number={data.number}
+                        name={data.name}
+                        expiry={data.expiryYear + "/" + data.expiryDate}
+                        cvc={data.cvc}
                         focused={focused}
                         callback={handleCallback}
                     />

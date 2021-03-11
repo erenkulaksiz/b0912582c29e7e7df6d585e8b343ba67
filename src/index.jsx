@@ -26,6 +26,8 @@ const footerProgress = ['Kaydet ve Devam Et', 'Kaydet ve Devam Et', 'Ödeme Yap 
 
 const hotelsRoute = "https://5f6d939160cf97001641b049.mockapi.io/tkn/hotels";
 const hotelDetailsRoute = "https://5f6d939160cf97001641b049.mockapi.io/tkn/hotel-details";
+const couponRoute = "https://5f6d939160cf97001641b049.mockapi.io/tkn/coupons?code=";
+const reservationsRoute = "https://5f6d939160cf97001641b049.mockapi.io/tkn/hotel-bookings";
 
 const App = () => {
 
@@ -36,6 +38,8 @@ const App = () => {
     const paymentDetails = store.getState().paymentDetails.data;
     const hotelList = store.getState().hotels;
     const hotelDetailList = store.getState().hotelDetails;
+    const couponDetails = store.getState().coupon;
+    let price = 0;
 
     const loadHotels = async () => {
         console.log("@loadHotels");
@@ -81,6 +85,61 @@ const App = () => {
         }
     }
 
+    const checkCouponCode = async (code) => {
+        console.log("@couponCode w/ " + code);
+        if (couponDetails.applied) {
+            alert("bir kod zaten girildi");
+        } else {
+            if (code) {
+                try {
+                    await axios.get(couponRoute + code.toUpperCase())
+                        .then(res => {
+                            const data = res.data;
+                            //console.log(data);
+                            data.map(function (theData, index) {
+                                console.log("data", theData);
+                                if (theData.code == code.toUpperCase()) {
+                                    const expiration_at = new Date(theData.expiration_at);
+                                    const currentDate = new Date();
+                                    if (currentDate > expiration_at) {
+                                        alert("this coupon expired");
+                                    } else {
+                                        store.dispatch({
+                                            type: 'SET_COUPON', payload: {
+                                                applied: true,
+                                                discount: theData.discount_ammount,
+                                                code: theData.code,
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    console.log("code not valid");
+                                    alert("code not valid");
+                                }
+                            });
+                            if (data.length == 0) {
+                                console.log("invalid code");
+                                alert("code not valid");
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err.response.status);
+                            if (err.response.status === 404) {
+                                throw new Error('404');
+                            }
+                            throw err;
+                        })
+                } catch (err) {
+                    console.log("%cCant fetch couponCode:" + err, "color:red");
+                }
+            } else {
+                alert("enter a code");
+            }
+        }
+    }
+
+    // Receive data from API
+
     if (hotelList) {
         if (hotelList.length < 1) {
             loadHotels();
@@ -93,27 +152,21 @@ const App = () => {
         }
     }
 
+    // %>%>%>
+
     const backProgress = () => {
         // senle işim olcak bekle
 
         store.dispatch({ type: 'BACK' });
     }
 
-    const continueProgress = () => {
+    const continueProgress = async () => {
         // check states / validate
 
         console.log("selectiveData", selectiveData);
 
         if (progress == 1) {
             if (selectiveData.data) {
-                // Eger data var ise islem yap.
-                //const dateDiff = selectiveData.data.startdate - selectiveData.data.enddate;
-                //const daysDiff = Math.floor(dateDiff / (1000 * 3600 * 24)) + 1;
-                //console.log("daysdiff", daysDiff);
-                /*if (daysDiff < 0 || daysDiff == 0) {
-                    alert("check dates");
-                } else {*/
-
                 if (selectiveData.data.selectedHotel != 0) {
                     if (!selectiveData.data.startdate) {
                         alert("choose a start date");
@@ -160,6 +213,41 @@ const App = () => {
                                     // success
                                     store.dispatch({ type: 'CONTINUE' });
                                     window.scrollTo(0, 0);
+                                    // bütün zart zurt bilgileri apiye aktar
+                                    console.log("@sendToApi");
+                                    const finalizedData = {
+                                        hotel_id: selectiveData.data.selectedHotel,
+                                        start_date: selectiveData.data.startdate,
+                                        end_date: selectiveData.data.enddate,
+                                        adult: selectiveData.data.adult,
+                                        child: selectiveData.data.children,
+                                        room_type: selectedRoom,
+                                        room_scenic: selectedView,
+                                        price: price,
+                                        coupon_code: couponDetails.code,
+                                        card_name: paymentDetails.name,
+                                        card_number: paymentDetails.number,
+                                        card_date_month: paymentDetails.expiryDate,
+                                        card_date_year: paymentDetails.expiryYear,
+                                        card_ccv: paymentDetails.ccv,
+                                    };
+                                    try {
+                                        await axios.post(reservationsRoute, finalizedData)
+                                            .then(res => {
+                                                const data = res.data;
+                                                console.log("SENT DATA", data);
+                                            })
+                                            .catch(err => {
+                                                console.log(err.response.status);
+                                                if (err.response.status === 404) {
+                                                    throw new Error('404');
+                                                }
+                                                throw err;
+                                            })
+                                    } catch (err) {
+                                        console.log("Cant fetch details:" + err, "color:red");
+                                    }
+
                                 } else {
                                     alert("enter cvc");
                                 }
@@ -178,8 +266,6 @@ const App = () => {
             } else {
                 alert("fill card data");
             }
-
-
         }
 
         console.log(progress, " progress");
@@ -240,6 +326,8 @@ const App = () => {
                 {progress != 4 && <Stepper step={progress} />}
                 <div className={styles.wrapper}>
 
+                    {console.log("paymentDetails", paymentDetails)}
+
                     {
                         progress == 1 &&
                         <Selective
@@ -289,8 +377,10 @@ const App = () => {
                                 hotels={hotelList}
                                 selectedRoom={selectedRoom}
                                 selectedView={selectedView}
-                                submitCouponCode={data => { alert(data) }}
+                                submitCouponCode={data => { checkCouponCode(data); }}
+                                couponDetails={couponDetails}
                                 withCoupon={true}
+                                price={data => { console.log(data); price = data; }}
                             />
                         </div>
                     }
@@ -310,6 +400,7 @@ const App = () => {
                                 selectedRoom={selectedRoom}
                                 selectedView={selectedView}
                                 withCoupon={false}
+                                price={data => { console.log(data); price = data; }}
                             />
                         </div>
                     }
