@@ -217,10 +217,10 @@ const App = () => {
                                     console.log("@sendToApi");
                                     const finalizedData = {
                                         hotel_id: selectiveData.data.selectedHotel,
-                                        start_date: selectiveData.data.startdate,
-                                        end_date: selectiveData.data.enddate,
+                                        start_date: selectiveData.data.startdate.getFullYear() + "-" + (selectiveData.data.startdate.getMonth() + 1) + "-" + selectiveData.data.startdate.getDate(),
+                                        end_date: selectiveData.data.enddate.getFullYear() + "-" + (selectiveData.data.enddate.getMonth() + 1) + "-" + selectiveData.data.enddate.getDate(),
                                         adult: selectiveData.data.adult,
-                                        child: selectiveData.data.children,
+                                        child: selectiveData.data.child_status ? selectiveData.data.children : 0,
                                         room_type: selectedRoom,
                                         room_scenic: selectedView,
                                         price: price,
@@ -229,8 +229,9 @@ const App = () => {
                                         card_number: paymentDetails.number,
                                         card_date_month: paymentDetails.expiryDate,
                                         card_date_year: paymentDetails.expiryYear,
-                                        card_ccv: paymentDetails.ccv,
+                                        card_cvv: paymentDetails.cvc,
                                     };
+                                    console.log(finalizedData);
                                     try {
                                         await axios.post(reservationsRoute, finalizedData)
                                             .then(res => {
